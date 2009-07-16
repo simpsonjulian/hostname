@@ -1,0 +1,40 @@
+<project default="test">
+
+	<property name="build.dir" location="build" />
+	<property name="classes" location="${build.dir}/classes" />
+
+	<path id="cp">
+		<pathelement location="${classes}" />
+		<fileset file="ant.jar" />
+		<fileset file="${build.dir}/hostname.jar"/>
+	</path>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="${build.dir}">
+				<include name="**/*" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes}" />
+		<javac destdir="${classes}" srcdir="src" debug="true">
+			<classpath refid="cp" />
+		</javac>
+	</target>
+
+	<target name="hostname.jar" depends="compile">
+		<mkdir dir="${build.dir}" />
+		<jar destfile="${build.dir}/hostname.jar">
+			<fileset dir="${classes}" />
+		</jar>
+	</target>
+
+	<target name="test" depends="hostname.jar">
+		<taskdef classname="org.juliansimpson.HostName" name="hostname" classpathref="cp" />
+		<echo message="property $${hostname} = ${hostname}" />
+		<hostname property="hostname" />
+		<echo message="property $${hostname} = ${hostname}" />
+	</target>
+</project>
